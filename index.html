@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 แอปบันทึกรายรับ-รายจ่าย</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+.container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+}
+h1 {
+    text-align: center;
+    color: #1a73e8;
+}
+.summary-display {
+    display: flex;
+    justify-content: space-between;
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+.summary-box {
+    flex: 1;
+    text-align: center;
+}
+#currentBalance { font-size: 1.8em; font-weight: bold; }
+#totalIncome { color: #2e7d32; font-weight: bold; }
+#totalExpense { color: #c62828; font-weight: bold; }
+
+.input-section {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: #f7f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+.input-section input,
+.input-section select,
+.input-section button {
+    padding: 10px;
+    font-size: 1em;
+}
+.input-section button {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+th { background: #eee; }
+
+.income-row { background: #e8f5e9; color: #2e7d32; }
+.expense-row { background: #fbe9e7; color: #c62828; }
+
+.delete-btn {
+    background: #f44336;
+    color: #fff;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>📊 แอปบันทึกรายรับ-รายจ่าย</h1>
+
+<div class="summary-display">
+    <div class="summary-box">
+        <p>รายรับรวม</p>
+        <span id="totalIncome">0.00 บาท</span>
+    </div>
+    <div class="summary-box">
+        <p>รายจ่ายรวม</p>
+        <span id="totalExpense">0.00 บาท</span>
+    </div>
+    <div class="summary-box">
+        <p>คงเหลือ</p>
+        <span id="currentBalance">0.00 บาท</span>
+    </div>
+</div>
+
+<div class="input-section">
+    <select id="transactionType" onchange="updateCategoryOptions()">
+        <option value="income">รายรับ</option>
+        <option value="expense">รายจ่าย</option>
+    </select>
+
+    <select id="transactionCategory"></select>
+    <input type="number" id="transactionAmount" placeholder="จำนวนเงิน">
+    <input type="text" id="transactionDescription" placeholder="รายละเอียด">
+    <button onclick="addTransaction()">บันทึก</button>
+</div>
+
+<table>
+<thead>
+<tr>
+    <th>วันที่</th>
+    <th>รายละเอียด</th>
+    <th>ประเภท</th>
+    <th>หมวดหมู่</th>
+    <th>จำนวน</th>
+    <th>ลบ</th>
+</tr>
+</thead>
+<tbody id="historyTableBody">
+<tr><td colspan="6">กำลังโหลดข้อมูล...</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<script>
+const GOOGLE_SHEET_WEB_APP_URL =
+'https://script.google.com/macros/s/AKfycbxPXbkt6_vRFn2CZN011WjwIBQ1e8x_PYekaFRJzIQZVUeflPkRVNZIFhNubtrltvzDcg/exec';
+
+let transactions = [];
+
+const categories = {
+    income: [
+        { value: 'salary', label: 'เงินเดือน' },
+        { value: 'other', label: 'อื่นๆ' }
+    ],
+    expense: [
+        { value: 'food', label: 'อาหาร' },
+        { value: 'travel', label: 'เดินทาง' },
+        { value: 'other', label: 'อื่นๆ' }
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateCategoryOptions();
+    fetchHistory();
+});
+
+function formatNumber(n) {
+    return Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2 });
+}
+
+function updateCategoryOptions() {
+    const type = transactionType.value;
+    transactionCategory.innerHTML = '';
+    categories[type].forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.value;
+        opt.textContent = c.label;
+        transactionCategory.appendChild(opt);
+    });
+}
+
+function updateSummary() {
+    let income = 0, expense = 0;
+    transactions.forEach(t => {
+        if (t.type === 'income') income += Number(t.amount);
+        else expense += Number(t.amount);
+    });
+    totalIncome.textContent = formatNumber(income) + ' บาท';
+    totalExpense.textContent = formatNumber(expense) + ' บาท';
+    currentBalance.textContent = formatNumber(income - expense) + ' บาท';
+}
+
+async function fetchHistory() {
+    const res = await fetch(GOOGLE_SHEET_WEB_APP_URL);
+    const data = await res.json();
+
+    // ⭐ แก้จุดสำคัญ
+    transactions = Array.isArray(data) ? data : [];
+
+    updateSummary();
+    renderHistory();
+}
+
+async function addTransaction() {
+    if (!transactionAmount.value) return alert('กรุณาใส่จำนวนเงิน');
+
+    const data = new URLSearchParams({
+        id: Date.now(),
+        dateTime: new Date().toLocaleString('th-TH'),
+        type: transactionType.value,
+        category: transactionCategory.value,
+        description: transactionDescription.value,
+        amount: transactionAmount.value
+    });
+
+    await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+        method: 'POST',
+        body: data
+    });
+
+    transactionAmount.value = '';
+    transactionDescription.value = '';
+    fetchHistory();
+}
+
+async function deleteTransaction(id) {
+    if (!confirm('ยืนยันการลบ?')) return;
+
+    const data = new URLSearchParams({
+        action: 'delete',
+        id
+    });
+
+    await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+        method: 'POST',
+        body: data
+    });
+
+    fetchHistory();
+}
+
+function renderHistory() {
+    historyTableBody.innerHTML = '';
+
+    if (transactions.length === 0) {
+        historyTableBody.innerHTML =
+            `<tr><td colspan="6">ไม่มีข้อมูล</td></tr>`;
+        return;
+    }
+
+    transactions.slice().reverse().forEach(t => {
+        const tr = document.createElement('tr');
+        tr.className = t.type === 'income' ? 'income-row' : 'expense-row';
+        tr.innerHTML = `
+            <td>${t.dateTime}</td>
+            <td>${t.description}</td>
+            <td>${t.type}</td>
+            <td>${t.category}</td>
+            <td>${formatNumber(t.amount)}</td>
+            <td>
+                <button class="delete-btn"
+                    onclick="deleteTransaction('${t.id}')">ลบ</button>
+            </td>
+        `;
+        historyTableBody.appendChild(tr);
+    });
+}
+</script>
+
+</body>
+</html>
