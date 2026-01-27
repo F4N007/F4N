@@ -1,135 +1,29 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📊 แอปบันทึกรายรับ-รายจ่าย</title>
-
-<style>
-/* การตั้งค่าพื้นฐาน */
-body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: #f0f2f5;
-    margin: 0; 
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* ===== 1. สไตล์หน้าล็อกอิน (Login Screen) ===== */
-#loginSection {
-    background: #fff;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 380px;
-    text-align: center;
-    margin-top: 80px;
-}
-#loginSection h2 { color: #1a73e8; margin-top: 0; }
-#loginSection input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 16px;
-}
-#loginSection button {
-    width: 100%;
-    padding: 12px;
-    background: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
-#loginSection button:hover { background: #1557b0; }
-.err-msg { color: #d32f2f; font-size: 14px; margin-top: 10px; height: 20px; }
-
-/* ===== 2. สไตล์ส่วนแอปหลัก (Main App) ===== */
-#mainApp { display: none; width: 100%; max-width: 900px; }
-
-.container {
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,.1);
-}
-
-/* ปุ่มล็อกเอาต์ (Logout Button) */
-.header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-.logout-btn {
-    background: #f44336;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-.logout-btn:hover { background: #d32f2f; }
-
-/* ส่วนสรุปผล */
-.summary-display {
-    display: flex;
-    justify-content: space-between;
-    background: #e3f2fd;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 25px;
-}
-.summary-box { flex: 1; text-align: center; }
-#currentBalance { font-size: 1.8em; font-weight: bold; color: #1a73e8; }
-#totalIncome { color: #2e7d32; font-weight: bold; }
-#totalExpense { color: #c62828; font-weight: bold; }
-
-/* ส่วนกรอกข้อมูล */
-.input-section {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    background: #f7f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-.input-section input, .input-section select, .input-section button { 
-    padding: 10px; 
-    font-size: 1em; 
-    border: 1px solid #ddd; 
-    border-radius: 5px;
-}
-.input-section button { 
-    background: #4CAF50; 
-    color: #fff; 
-    border: none; 
-    cursor: pointer; 
-    font-weight: bold;
-}
-
-/* ตารางข้อมูล */
-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-th { background: #f1f1f1; }
-.income-row { background: #e8f5e9; color: #2e7d32; }
-.expense-row { background: #fbe9e7; color: #c62828; }
-.delete-btn { background: #ff5252; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 แอปบันทึกรายรับ-รายจ่าย</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        #loginSection { background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; margin-top: 80px; }
+        #loginSection input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        #loginSection button { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        #mainApp { display: none; width: 100%; max-width: 900px; }
+        .container { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.1); }
+        .summary-display { display: flex; justify-content: space-between; background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 25px; }
+        .summary-box { flex: 1; text-align: center; }
+        #currentBalance { font-size: 1.8em; font-weight: bold; color: #1a73e8; }
+        .input-section { display: flex; gap: 10px; flex-wrap: wrap; background: #f7f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+        .input-section input, .input-section select, .input-section button { padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .input-section button { background: #4CAF50; color: #fff; border: none; cursor: pointer; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .income-row { background: #e8f5e9; color: #2e7d32; }
+        .expense-row { background: #fbe9e7; color: #c62828; }
+        .delete-btn { background: #ff5252; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+    </style>
 </head>
-
 <body>
 
 <div id="loginSection">
@@ -137,33 +31,21 @@ th { background: #f1f1f1; }
     <input type="text" id="userInput" placeholder="ชื่อผู้ใช้งาน">
     <input type="password" id="passInput" placeholder="รหัสผ่าน">
     <button onclick="handleLogin()">เข้าสู่ระบบ</button>
-    <div id="loginError" class="err-msg"></div>
+    <div id="loginError" style="color:red; margin-top:10px;"></div>
 </div>
 
 <div id="mainApp">
-    <div class="header-bar">
-        <span style="font-weight: bold; color: #555;">Smart Money Tracker</span>
-        <button class="logout-btn" onclick="handleLogout()">🚪 ออกจากระบบ</button>
+    <div style="width:100%; display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span>Smart Money Tracker</span>
+        <button onclick="handleLogout()" style="background:#f44336; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">🚪 ออกจากระบบ</button>
     </div>
-    
     <div class="container">
         <h1 style="text-align: center; color: #1a73e8; margin-top: 0;">📊 รายรับ-รายจ่าย</h1>
-
         <div class="summary-display">
-            <div class="summary-box">
-                <p style="margin: 0;">รายรับรวม</p>
-                <span id="totalIncome">0.00 บาท</span>
-            </div>
-            <div class="summary-box">
-                <p style="margin: 0;">รายจ่ายรวม</p>
-                <span id="totalExpense">0.00 บาท</span>
-            </div>
-            <div class="summary-box">
-                <p style="margin: 0;">คงเหลือ</p>
-                <span id="currentBalance">0.00 บาท</span>
-            </div>
+            <div class="summary-box"><p>รายรับรวม</p><span id="totalIncome" style="color:#2e7d32; font-weight:bold;">0.00 บาท</span></div>
+            <div class="summary-box"><p>รายจ่ายรวม</p><span id="totalExpense" style="color:#c62828; font-weight:bold;">0.00 บาท</span></div>
+            <div class="summary-box"><p>คงเหลือ</p><span id="currentBalance">0.00 บาท</span></div>
         </div>
-
         <div class="input-section">
             <select id="transactionType" onchange="updateCategoryOptions()">
                 <option value="income">รายรับ</option>
@@ -172,19 +54,11 @@ th { background: #f1f1f1; }
             <select id="transactionCategory"></select>
             <input type="number" id="transactionAmount" placeholder="จำนวนเงิน">
             <input type="text" id="transactionDescription" placeholder="รายละเอียด">
-            <button onclick="addTransaction()">➕ บันทึก</button>
+            <button id="addBtn" onclick="addTransaction()">➕ บันทึก</button>
         </div>
-
         <table>
             <thead>
-                <tr>
-                    <th>วันที่</th>
-                    <th>รายละเอียด</th>
-                    <th>ประเภท</th>
-                    <th>หมวดหมู่</th>
-                    <th>จำนวน</th>
-                    <th>ลบ</th>
-                </tr>
+                <tr><th>วันที่</th><th>รายละเอียด</th><th>ประเภท</th><th>หมวดหมู่</th><th>จำนวน</th><th>ลบ</th></tr>
             </thead>
             <tbody id="historyTableBody">
                 <tr><td colspan="6">กำลังโหลดข้อมูล...</td></tr>
@@ -194,13 +68,10 @@ th { background: #f1f1f1; }
 </div>
 
 <script>
-/* ข้อมูลสำหรับเข้าสู่ระบบ */
-const AUTH_CONFIG = {
-    username: "Din",
-    password: "1234"
-};
-
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxPXbkt6_vRFn2CZN011WjwIBQ1e8x_PYekaFRJzIQZVUeflPkRVNZIFhNubtrltvzDcg/exec';
+// ตั้งค่าสำหรับการล็อกอิน
+const AUTH_CONFIG = { username: "din", password: "1234" };
+// ใส่ URL ที่ได้จากการ Deployment ของคุณตรงนี้
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzsOFjSvWH63TgbBIYIUDUsgxO5Hm1iokmYfNEDe1G9YyZMgcwsXRfgIQCsJRu9yFHz9w/exec';
 
 let transactions = [];
 const categories = {
@@ -208,33 +79,24 @@ const categories = {
     expense: [{v:'food', l:'อาหาร'}, {v:'travel', l:'เดินทาง'}, {v:'other', l:'อื่นๆ'}]
 };
 
-/* --- ระบบ Authentication --- */
-
 document.addEventListener('DOMContentLoaded', () => {
-    // ตรวจสอบว่าเคยล็อกอินค้างไว้ไหม
-    if (localStorage.getItem("isLoggedIn") === "true") {
-        showMainApp();
-    }
+    if (localStorage.getItem("isLoggedIn") === "true") showMainApp();
 });
 
 function handleLogin() {
-    const user = document.getElementById('userInput').value;
+    const user = document.getElementById('userInput').value.toLowerCase();
     const pass = document.getElementById('passInput').value;
-    const errorDisplay = document.getElementById('loginError');
-
     if (user === AUTH_CONFIG.username && pass === AUTH_CONFIG.password) {
         localStorage.setItem("isLoggedIn", "true");
         showMainApp();
     } else {
-        errorDisplay.textContent = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!";
+        document.getElementById('loginError').textContent = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!";
     }
 }
 
 function handleLogout() {
-    if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
-        localStorage.removeItem("isLoggedIn");
-        location.reload(); // รีโหลดเพื่อกลับไปหน้าล็อกอิน
-    }
+    localStorage.removeItem("isLoggedIn");
+    location.reload();
 }
 
 function showMainApp() {
@@ -244,21 +106,10 @@ function showMainApp() {
     fetchHistory();
 }
 
-/* --- ระบบจัดการข้อมูล (โค้ดเดิมของคุณ) --- */
-
-function formatNumber(n) {
-    return Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2 });
-}
-
 function updateCategoryOptions() {
     const type = document.getElementById('transactionType').value;
     const catSelect = document.getElementById('transactionCategory');
-    catSelect.innerHTML = '';
-    categories[type].forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.v; opt.textContent = c.l;
-        catSelect.appendChild(opt);
-    });
+    catSelect.innerHTML = categories[type].map(c => `<option value="${c.v}">${c.l}</option>`).join('');
 }
 
 async function fetchHistory() {
@@ -266,10 +117,38 @@ async function fetchHistory() {
         const res = await fetch(GOOGLE_SHEET_URL);
         const data = await res.json();
         transactions = Array.isArray(data) ? data : [];
-        updateSummary();
         renderHistory();
+        updateSummary();
+    } catch (e) { console.error("โหลดข้อมูลไม่สำเร็จ", e); }
+}
+
+async function addTransaction() {
+    const amt = document.getElementById('transactionAmount');
+    const desc = document.getElementById('transactionDescription');
+    const btn = document.getElementById('addBtn');
+    if (!amt.value) return alert('กรุณาใส่จำนวนเงิน');
+
+    btn.disabled = true; btn.innerText = '⌛ บันทึก...';
+    
+    // เพิ่ม action: 'add' เพื่อให้ฝั่ง GS รู้ว่าจะให้ทำอะไร
+    const payload = new URLSearchParams({
+        action: 'add',
+        id: Date.now(),
+        dateTime: new Date().toLocaleString('th-TH'),
+        type: document.getElementById('transactionType').value,
+        category: document.getElementById('transactionCategory').value,
+        description: desc.value || '-',
+        amount: amt.value
+    });
+
+    try {
+        await fetch(GOOGLE_SHEET_URL, { method: 'POST', body: payload });
+        amt.value = ''; desc.value = '';
+        fetchHistory(); 
     } catch (e) {
-        console.error("Fetch Error:", e);
+        alert('บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อ');
+    } finally {
+        btn.disabled = false; btn.innerText = '➕ บันทึก';
     }
 }
 
@@ -279,27 +158,24 @@ function updateSummary() {
         if (t.type === 'income') inc += Number(t.amount);
         else exp += Number(t.amount);
     });
-    document.getElementById('totalIncome').textContent = formatNumber(inc) + ' บาท';
-    document.getElementById('totalExpense').textContent = formatNumber(exp) + ' บาท';
-    document.getElementById('currentBalance').textContent = formatNumber(inc - exp) + ' บาท';
+    document.getElementById('totalIncome').innerText = inc.toLocaleString() + ' บาท';
+    document.getElementById('totalExpense').innerText = exp.toLocaleString() + ' บาท';
+    document.getElementById('currentBalance').innerText = (inc - exp).toLocaleString() + ' บาท';
 }
 
-async function addTransaction() {
-    const amt = document.getElementById('transactionAmount');
-    if (!amt.value) return alert('กรุณาใส่จำนวนเงิน');
-
-    const payload = new URLSearchParams({
-        id: Date.now(),
-        dateTime: new Date().toLocaleString('th-TH'),
-        type: document.getElementById('transactionType').value,
-        category: document.getElementById('transactionCategory').value,
-        description: document.getElementById('transactionDescription').value,
-        amount: amt.value
-    });
-
-    await fetch(GOOGLE_SHEET_URL, { method: 'POST', body: payload });
-    amt.value = ''; document.getElementById('transactionDescription').value = '';
-    fetchHistory();
+function renderHistory() {
+    const body = document.getElementById('historyTableBody');
+    // ใช้ Backtick (`) เพื่อครอบคลุมเนื้อหา HTML แบบหลายบรรทัด
+    body.innerHTML = transactions.slice().reverse().map(t => `
+        <tr class="${t.type === 'income' ? 'income-row' : 'expense-row'}">
+            <td>${t.dateTime}</td>
+            <td>${t.description}</td>
+            <td>${t.type === 'income' ? 'รายรับ' : 'รายจ่าย'}</td>
+            <td>${t.category}</td>
+            <td>${Number(t.amount).toLocaleString()}</td>
+            <td><button class="delete-btn" onclick="deleteTransaction('${t.id}')">ลบ</button></td>
+        </tr>
+    `).join('') || '<tr><td colspan="6">ไม่มีข้อมูล</td></tr>';
 }
 
 async function deleteTransaction(id) {
@@ -308,29 +184,6 @@ async function deleteTransaction(id) {
     await fetch(GOOGLE_SHEET_URL, { method: 'POST', body: payload });
     fetchHistory();
 }
-
-function renderHistory() {
-    const body = document.getElementById('historyTableBody');
-    body.innerHTML = '';
-    if (transactions.length === 0) {
-        body.innerHTML = '<tr><td colspan="6">ไม่มีข้อมูล</td></tr>';
-        return;
-    }
-    transactions.slice().reverse().forEach(t => {
-        const tr = document.createElement('tr');
-        tr.className = t.type === 'income' ? 'income-row' : 'expense-row';
-        tr.innerHTML = `
-            <td>${t.dateTime}</td>
-            <td>${t.description}</td>
-            <td>${t.type === 'income' ? 'รายรับ' : 'รายจ่าย'}</td>
-            <td>${t.category}</td>
-            <td>${formatNumber(t.amount)}</td>
-            <td><button class="delete-btn" onclick="deleteTransaction('${t.id}')">ลบ</button></td>
-        `;
-        body.appendChild(tr);
-    });
-}
 </script>
-
 </body>
 </html>
